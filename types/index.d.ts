@@ -1,4 +1,4 @@
-import type { CONFIG_KEY, Option, create } from '../lib/index';
+import type { CONFIG_KEY, Option, create } from '../src/index';
 
 declare module 'vue' {
     interface ComponentCustomProperties {

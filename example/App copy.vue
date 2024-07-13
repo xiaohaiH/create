@@ -22,7 +22,7 @@
 
 <script lang="ts" setup>
 import { getCurrentInstance, ref } from 'vue';
-import { create, useComponent } from '../lib/index';
+import { create, useComponent } from '../src/index';
 import Lump from './components/lump.vue';
 import HDialog from './components/dialog.vue';
 
