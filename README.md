@@ -4,6 +4,8 @@
 >     -   可将 `vue` 组件挂载到全局实例上供全局调用
 >     -   通过 `useComponent` 函数调用 `vue` 组件
 
+[在线demo](https://xiaohaih.github.io/create/)
+
 ## 安装
 
 <details>
@@ -27,6 +29,12 @@
 >
 > ```bash
 > yarn add @xiaohaih/create-api
+> ```
+
+> #### 基于 `cdn`
+>
+> ```html
+> <script src="https://unpkg.com/@xiaohaih/create/dist/index.umd.cjs"></script>
 > ```
 
 </details>
@@ -54,16 +62,17 @@ function clickHandle() {
 
 > `main.ts`
 
-```ts
+```js
 import { createApp } from 'vue';
 import { install } from '@xiaohaih/create-api';
-const app = createApp(App)
+
+const app = createApp(App);
 app.use(install);
 ```
 
 > `a.vue`
 
-```ts
+```js
 import { create } from '@xiaohaih/create-api';
 import Dialog from './components/dialog.vue';
 
@@ -83,12 +92,12 @@ Dialog.$create({
 getCurrentInstance()?.proxy?.$createDialog({
     title: 'test',
     content: '内容',
-}).show()
+}).show();
 ```
 
 > `src/types/create.d.ts`
 
-```ts
+```js
 // 为全局组件补充声明
 import type { CreateFn } from '@xiaohaih/create-api';
 import type Dialog from '@/components/dialog.vue';
