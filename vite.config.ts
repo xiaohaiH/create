@@ -6,7 +6,8 @@ import UnoCSS from 'unocss/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+    base: mode === 'production' ? '/create' : '/',
     // vite 配置
     plugins: [
         vue(),
@@ -18,4 +19,4 @@ export default defineConfig({
     build: {
         outDir: 'dist2',
     },
-} satisfies UserConfig);
+}) satisfies UserConfig);
