@@ -119,6 +119,6 @@ export default antfu(
         },
     },
     {
-        ignores: ['.eslintrc-auto-import.json', '**/.eslintrc-auto-import.json/**'],
+        ignores: ['.eslintrc-auto-import.json', '**/.eslintrc-auto-import.json/**', '.github/**'],
     },
 );
