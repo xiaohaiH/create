@@ -34,7 +34,7 @@
 > #### 基于 `cdn`
 >
 > ```html
-> <script src="https://unpkg.com/@xiaohaih/create/dist/index.umd.cjs"></script>
+> <script src="https://unpkg.com/@xiaohaih/create-api/dist/index.umd.cjs"></script>
 > ```
 
 </details>

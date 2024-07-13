@@ -1,0 +1,7 @@
+.github
+.vscode
+dist2
+example
+node_modules
+public
+.env
