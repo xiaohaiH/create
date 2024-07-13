@@ -14,6 +14,14 @@ defineOptions({
     name: 'Aca',
 });
 const props = defineProps<{ name?: string }>();
+
+console.log(props.name, 11);
+
+defineExpose({
+    /** 哈哈哈 */
+    show: (value: string) => true,
+    // hide: (value: string, a: number) => true,
+});
 </script>
 
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
-import type { App, Component, ComponentInternalInstance, ComponentPublicInstance, VNode, h } from 'vue';
-import type { ComponentExposed } from 'vue-component-type-helpers';
+import type { App, Component, ComponentInternalInstance, ComponentPublicInstance, MaybeRef, VNode, h } from 'vue';
+import type { ComponentExposed, ComponentProps } from 'vue-component-type-helpers';
 import type { CHILD_REF, CONFIG_KEY, CONTAINER, INSTALLED_KEY, NATIVE_PROPS } from './config';
 
 /** 为 App 实例补充声明 */
@@ -19,15 +19,15 @@ export interface Option {
     appendTo?: string | Element | Node | (() => Element | Node);
 }
 
+export type MaybeRefProps<T> = {
+    [K in keyof T]: MaybeRef<T[K]>;
+};
+
 /** 补充声明 - 增加挂载到组件实例上的方法 */
 export type CustomComponent<T> = CustomMethod<T> & Omit<ComponentExposed<T>, keyof CustomMethod<T>>;
 
 /** 为组件增加自定义事件 */
-export interface CustomMethod<T> {
-    /** 组件内部的 show 事件 */
-    nativeShow?: (...args: any[]) => void;
-    /** 组件内部的 hide 事件 */
-    nativeHide?: (...args: any[]) => void;
+export type CustomMethod<T, E = ComponentExposed<T>, K extends keyof E = keyof E> = {
     /** 显示时触发 */
     show: (...args: any[]) => CustomComponent<T>;
     /** 隐藏时触发 */
@@ -36,7 +36,21 @@ export interface CustomMethod<T> {
     $updateProps: (props: Record<string, any>, mergeProps?: boolean) => CustomComponent<T>;
     /** 卸载组件 */
     $unmount: () => void;
-}
+
+// 这种写法可定义注释
+// } & Omit<{
+//     /** 组件内部的 show 事件 */
+//     nativeShow: K extends 'show' ? E[K] : never;
+//     /** 组件内部的 hide 事件 */
+//     nativeHide: K extends 'hide' ? E[K] : never;
+// }, ('show' extends K ? never : 'nativeShow') | ('hide' extends K ? never : 'nativeHide')>;
+// 这种写法可跳转到方法定义的位置
+} & Required<AdjustReservedKey<T>>;
+
+/** 保留组件内部的 show 和 hide 并调整字段 */
+export type AdjustReservedKey<T, E = ComponentExposed<T>, R = 'show' | 'hide'> = {
+    [K in keyof E as K extends R ? `native${Capitalize<Extract<K, string>>}` : never]: E[K];
+};
 
 /** 为 vue 组件补充 $create 方法 */
 export type CreateComponent<T> = T & {
@@ -59,3 +73,8 @@ export interface CustomVNode<T> extends Omit<VNode, 'component'> {
 
 /** 插槽或子组件 */
 export type VNodeChildren = NonNullable<Parameters<typeof h>[2]>;
+
+/** 补充全局挂载函数声明 */
+export interface CreateFn<T> {
+    (props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren, config?: Option): CustomComponent<T>;
+}
