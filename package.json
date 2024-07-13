@@ -3,7 +3,11 @@
     "type": "module",
     "version": "0.0.1",
     "description": "通过js挂载vue组件",
-    "keywords": ["vue-create-api", "create-api", "useComponent"],
+    "keywords": [
+        "vue-create-api",
+        "create-api",
+        "useComponent"
+    ],
     "exports": {
         ".": {
             "types": "./src/index.ts",
@@ -34,6 +38,7 @@
     },
     "devDependencies": {
         "@antfu/eslint-config": "^2.8.0",
+        "@types/node": "^20.14.10",
         "@unocss/eslint-plugin": "^0.61.0",
         "@vitejs/plugin-vue": "^5.0.4",
         "@vitejs/plugin-vue-jsx": "^3.1.0",
