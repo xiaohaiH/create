@@ -111,6 +111,19 @@ declare module 'vue' {
 
 </details>
 
+## 为 `typescript` 补充声明
+
+> `tips`: 因全局上补充了属性, 且直接暴露的源文件, 故需加上如下代码
+
+```
+# tsconfig.json
+{
+    "compilerOptions": {
+        "types": ["@xiaohaih/create-api/global"]
+    }
+}
+```
+
 ## 导出的函数
 
 ### `install(vueApp, [options])` 全局安装方法
