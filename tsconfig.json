@@ -13,7 +13,7 @@
             "@/*": ["./src/*"]
         },
         "resolveJsonModule": true,
-        "types": ["element-plus/global"],
+        "types": [],
 
         /* Linting */
         "allowImportingTsExtensions": true,
