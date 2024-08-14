@@ -63,8 +63,8 @@ export interface CustomVNode<T> extends Omit<VNode, 'component'> {
     [CHILD_REF]: CustomComponent<T>;
     /** 挂载元素 */
     [CONTAINER]: HTMLElement | null;
-    /** 组件当前的 props */
-    [NATIVE_PROPS]: Record<string, any> | undefined | null;
+    // /** 组件当前的 props */
+    // [NATIVE_PROPS]: Record<string, any> | undefined | null;
     /** 重写 component 属性, 为 refs 赋值 */
     component: (Omit<NonNullable<VNode['component']>, 'refs'> & {
         refs: { [CHILD_REF]?: CustomComponent<T> };

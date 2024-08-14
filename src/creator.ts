@@ -49,6 +49,8 @@ export function create<T extends Component>(component: T, conf?: ComponentIntern
 
 /** 已挂载的组件(上下文 uid 和组件名称作为key) */
 const mountComponent: Record<string, CustomVNode<any>> = {};
+/** 已挂载的组件需要传递的值 */
+const mountComponentExtraAttrs: Record<string, Partial<Record<'props' | 'slots', any>>> = {};
 /** 为匿名组件设置名称 */
 const componentName = new WeakMap<Component, string>();
 /** 非唯一组件或匿名组件时的自增值 */
@@ -72,7 +74,9 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
     componentName.has(comp) || componentName.set(comp, comp.name || `anonymous${++seed}`);
     const KEY = `${instance?.uid || ''}_${componentName.get(comp)}_${(config.single && ++seed) || ''}`;
     return (props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren) => {
+        mountComponentExtraAttrs[KEY] || (mountComponentExtraAttrs[KEY] = {});
         updateProps(props, config.mergeProps);
+        updateSlots(children);
         mount();
 
         /** 显示组件 */
@@ -99,8 +103,7 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
         /** 挂载组件 */
         function mount() {
             if (mountComponent[KEY]) return;
-            mountComponent[KEY] = h({ render: () => h(comp, { ...mountComponent[KEY][NATIVE_PROPS], ref: CHILD_REF }, children) }) as CustomVNode<T>;
-            props && updateProps(props, config.mergeProps);
+            mountComponent[KEY] = h({ render: () => h(comp, { ...mountComponentExtraAttrs[KEY].props, ref: CHILD_REF }, mountComponentExtraAttrs[KEY].slots) }) as CustomVNode<T>;
             instance?.appContext && (mountComponent[KEY].appContext = {
                 ...instance.appContext,
                 // @ts-expect-error 实例没有对 provides 进行声明
@@ -120,6 +123,8 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
                 nativeHide: mountComponent[KEY][CHILD_REF].hide,
                 $unmount: unmount,
                 $updateProps: updatePropsAndUpdate,
+                $updateSlots: updateSlots,
+                $forceUpdate: update,
                 show,
                 hide,
             });
@@ -134,27 +139,36 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
                 mountComponent[KEY][CONTAINER] = null;
             }
             delete mountComponent[KEY];
+            delete mountComponentExtraAttrs[KEY];
         }
         /** 更新 props 且刷新组件 */
         function updatePropsAndUpdate(...args: Parameters<typeof updateProps>) {
             updateProps(...args);
             update();
-            return mountComponent[KEY][CHILD_REF] as CustomComponent<T>; ;
+            return mountComponent[KEY][CHILD_REF] as CustomComponent<T>;
         }
         /** 更新 props */
         function updateProps(props: Record<string, any> | undefined | null, merge?: boolean) {
             if (!props) return;
-            if (!mountComponent[KEY]) return;
-            mountComponent[KEY][NATIVE_PROPS] = merge
+            if (!mountComponentExtraAttrs[KEY]) return;
+            mountComponentExtraAttrs[KEY].props = merge
                 ? mergeProps(
-                    mountComponent[KEY][NATIVE_PROPS] || {},
+                    mountComponent[KEY].props || {},
                     reactive(props),
                 )
                 : reactive(props);
         }
+        /** 更新插槽 */
+        function updateSlots(children?: VNodeChildren | null): CustomComponent<T> {
+            if (!mountComponentExtraAttrs[KEY]) return mountComponent[KEY]?.[CHILD_REF] as CustomComponent<T>;
+            if (mountComponentExtraAttrs[KEY].slots === children) return mountComponent[KEY]?.[CHILD_REF] as CustomComponent<T>;
+            mountComponentExtraAttrs[KEY].slots = children;
+            return update();
+        }
         /** 更新组件 tips 刷新是等到下个周期才会更新 props, 所以 show 需要在 nextTick 内执行 */
         function update() {
             mountComponent[KEY]?.component?.proxy?.$forceUpdate();
+            return mountComponent[KEY]?.[CHILD_REF] as CustomComponent<T>;
         }
 
         return mountComponent[KEY][CHILD_REF] as CustomComponent<T>;

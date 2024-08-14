@@ -151,6 +151,8 @@ declare module 'vue' {
 >         -   {() => `CustomComponent`} `hide` 隐藏组件(需内部实现 `hide` 方法)
 >         -   {() => void} `$unmount` 卸载组件
 >         -   {(`props`: object | null, `mergeProps`?: boolean) => `CustomComponent`} `$updateProps` 手动更新参数
+>         -   {(children?: VNodeChildren | null) => `CustomComponent`} `$updateSlots` 主动更新插槽
+>         -   {() => `CustomComponent`} `$forceUpdate` 强制更新组件
 
 ### `create` 执行后返回组件自身
 
