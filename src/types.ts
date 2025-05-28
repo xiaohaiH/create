@@ -33,7 +33,11 @@ export type CustomMethod<T, E = ComponentExposed<T>, K extends keyof E = keyof E
     /** 隐藏时触发 */
     hide: (...args: any[]) => CustomComponent<T>;
     /** 更新 props */
-    $updateProps: (props: Record<string, any>, mergeProps?: boolean) => CustomComponent<T>;
+    $updateProps: (props: Record<string, any> | undefined | null, mergeProps?: boolean) => CustomComponent<T>;
+    /** 更新 props */
+    $updateSlots: (children?: VNodeChildren | null) => CustomComponent<T>;
+    /** 更新 props */
+    $forceUpdate: () => CustomComponent<T>;
     /** 卸载组件 */
     $unmount: () => void;
 
@@ -77,4 +81,17 @@ export type VNodeChildren = NonNullable<Parameters<typeof h>[2]>;
 /** 补充全局挂载函数声明 */
 export interface CreateFn<T> {
     (props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren, config?: Option): CustomComponent<T>;
+}
+
+/** useComponent 函数的返回函数 */
+export interface UseComponentReturn<T> {
+    (props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren): CustomComponent<T>;
+    /** 判断是否存在实例(是否初始化) */
+    hasInstance: () => boolean;
+    /** 获取实例(未初始化时, 自动初始化) */
+    getInstance: () => CustomComponent<T>;
+    /** 更新 props 传参 */
+    updateProps: (props: MaybeRefProps<ComponentProps<T>> | undefined | null, merge?: boolean) => boolean;
+    /** 更新组件插槽 */
+    updateSlots: (children: VNodeChildren | undefined | null) => boolean;
 }

@@ -2,7 +2,7 @@ import type { App, Component, ComponentInternalInstance, ComponentPublicInstance
 import { camelize, getCurrentInstance, h, isVNode, mergeProps, nextTick, onBeforeUnmount, reactive, render } from 'vue';
 import type { ComponentExposed, ComponentProps } from 'vue-component-type-helpers';
 import { CHILD_REF, CONFIG_KEY, CONTAINER, INSTALLED_KEY, NATIVE_PROPS } from './config';
-import type { CreateComponent, CustomApp, CustomComponent, CustomVNode, MaybeRefProps, Option, VNodeChildren } from './types';
+import type { CreateComponent, CustomApp, CustomComponent, CustomVNode, MaybeRefProps, Option, UseComponentReturn, VNodeChildren } from './types';
 
 /** 最新挂载的全局实例 */
 let globalInstance: CustomApp<App> | null;
@@ -73,7 +73,7 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
     if (config.global && instance) instance = instance.root;
     componentName.has(comp) || componentName.set(comp, comp.name || `anonymous${++seed}`);
     const KEY = `${instance?.uid || ''}_${componentName.get(comp)}_${(config.single && ++seed) || ''}`;
-    return (props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren) => {
+    const carryCallback: UseComponentReturn<T> = function carryCallback(props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren) {
         mountComponentExtraAttrs[KEY] || (mountComponentExtraAttrs[KEY] = {});
         updateProps(props, config.mergeProps);
         updateSlots(children);
@@ -121,12 +121,12 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
             Object.assign(mountComponent[KEY][CHILD_REF], {
                 nativeShow: mountComponent[KEY][CHILD_REF].show,
                 nativeHide: mountComponent[KEY][CHILD_REF].hide,
-                $unmount: unmount,
+                show,
+                hide,
                 $updateProps: updatePropsAndUpdate,
                 $updateSlots: updateSlots,
                 $forceUpdate: update,
-                show,
-                hide,
+                $unmount: unmount,
             });
         }
         /** 卸载组件 */
@@ -149,14 +149,15 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
         }
         /** 更新 props */
         function updateProps(props: Record<string, any> | undefined | null, merge?: boolean) {
-            if (!props) return;
-            if (!mountComponentExtraAttrs[KEY]) return;
+            if (!props) return false;
+            if (!mountComponentExtraAttrs[KEY]) return false;
             mountComponentExtraAttrs[KEY].props = merge
                 ? mergeProps(
                     mountComponent[KEY].props || {},
                     reactive(props),
                 )
                 : reactive(props);
+            return true;
         }
         /** 更新插槽 */
         function updateSlots(children?: VNodeChildren | null): CustomComponent<T> {
@@ -173,6 +174,23 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
 
         return mountComponent[KEY][CHILD_REF] as CustomComponent<T>;
     };
+    carryCallback.hasInstance = () => {
+        return !!mountComponent[KEY]?.[CHILD_REF];
+    };
+    carryCallback.getInstance = () => {
+        return carryCallback.hasInstance() ? mountComponent[KEY][CHILD_REF] as CustomComponent<T> : carryCallback();
+    };
+    carryCallback.updateProps = (props, merge) => {
+        const status = carryCallback.hasInstance();
+        status && carryCallback.getInstance().$updateProps(props, merge);
+        return status;
+    };
+    carryCallback.updateSlots = (children) => {
+        const status = carryCallback.hasInstance();
+        status && carryCallback.getInstance().$updateSlots(children);
+        return status;
+    };
+    return carryCallback;
 }
 
 /** 判断是否是实例 */
