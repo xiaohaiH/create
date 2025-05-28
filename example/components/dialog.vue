@@ -1,6 +1,7 @@
 <template>
-    <ElDialog v-model:model-value="visible" :title="title">
-        弹窗
+    <ElDialog v-model:model-value="visible" :title="title" v-bind="$attrs">
+        <slot />
+        <div>弹窗</div>
     </ElDialog>
 </template>
 
