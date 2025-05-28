@@ -1,7 +1,7 @@
 {
     "name": "@xiaohaih/create-api",
     "type": "module",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "description": "通过js挂载vue组件",
     "keywords": [
         "vue-create-api",
