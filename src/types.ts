@@ -80,18 +80,18 @@ export type VNodeChildren = NonNullable<Parameters<typeof h>[2]>;
 
 /** 补充全局挂载函数声明 */
 export interface CreateFn<T> {
-    (props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren, config?: Option): CustomComponent<T>;
+    (props?: (MaybeRefProps<ComponentProps<T>> & { [index: string | number | symbol]: any }) | null, children?: VNodeChildren, config?: Option): CustomComponent<T>;
 }
 
 /** useComponent 函数的返回函数 */
 export interface UseComponentReturn<T> {
-    (props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren): CustomComponent<T>;
+    (props?: (MaybeRefProps<ComponentProps<T>> & { [index: string | number | symbol]: any }) | null, children?: VNodeChildren): CustomComponent<T>;
     /** 判断是否存在实例(是否初始化) */
     hasInstance: () => boolean;
     /** 获取实例(未初始化时, 自动初始化) */
     getInstance: () => CustomComponent<T>;
     /** 更新 props 传参 */
-    updateProps: (props: MaybeRefProps<ComponentProps<T>> | undefined | null, merge?: boolean) => boolean;
+    updateProps: (props: (MaybeRefProps<ComponentProps<T>> & { [index: string | number | symbol]: any }) | undefined | null, merge?: boolean) => boolean;
     /** 更新组件插槽 */
     updateSlots: (children: VNodeChildren | undefined | null) => boolean;
 }

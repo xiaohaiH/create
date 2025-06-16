@@ -73,7 +73,7 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
     if (config.global && instance) instance = instance.root;
     componentName.has(comp) || componentName.set(comp, comp.name || `anonymous${++seed}`);
     const KEY = `${instance?.uid || ''}_${componentName.get(comp)}_${(config.single && ++seed) || ''}`;
-    const carryCallback: UseComponentReturn<T> = function carryCallback(props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren) {
+    const carryCallback: UseComponentReturn<T> = function carryCallback(props, children) {
         mountComponentExtraAttrs[KEY] || (mountComponentExtraAttrs[KEY] = {});
         updateProps(props, config.mergeProps);
         updateSlots(children);
