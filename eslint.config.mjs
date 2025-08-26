@@ -38,6 +38,7 @@ export default antfu(
             'switch-colon-spacing': ['error', { after: true }],
             /** switch 冒号后面加空格 */
             'style/switch-colon-spacing': ['error', { after: true }],
+            'import/order': ['off'],
             /** 调整导入顺序 */
             'perfectionist/sort-imports': ['error', {
                 groups: [

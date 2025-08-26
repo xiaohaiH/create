@@ -28,6 +28,6 @@
         "skipLibCheck": true
     },
     "references": [{ "path": "./tsconfig.node.json" }],
-    "include": ["src/**/*.ts", "src/**/*.tsx", "example/**/*.vue", "example/**/*.ts", "example/**/*.tsx", "types/*.ts", "*.config.ts", "docs/**/*.ts", "docs/**/*.md"],
+    "include": ["src/**/*.ts", "src/**/*.tsx", "example/**/*.vue", "example/**/*.ts", "example/**/*.tsx", "types/*.ts", "docs/.vitepress/*.ts", "docs/**/*.md"],
     "exclude": ["./README.md"]
 }

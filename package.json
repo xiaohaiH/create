@@ -30,9 +30,9 @@
         "preview": "vite preview",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "docs:dev": "vitepress dev docs --host --port 2230",
+        "docs:dev": "vitepress dev docs --host",
         "docs:build": "vitepress build docs",
-        "docs:preview": "vitepress preview docs --port 2231"
+        "docs:preview": "vitepress preview docs"
     },
     "dependencies": {
         "element-plus": "^2.7.3",
