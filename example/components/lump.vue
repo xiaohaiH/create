@@ -1,5 +1,5 @@
 <template>
-    <div class="absolute left-[calc(50%-100px)] top-[calc(50%-100px)] size-200px bg-pink">
+    <div :class="{ absolute }" class="left-[calc(50%-100px)] top-[calc(50%-100px)] size-200px bg-pink">
         色块{{ name }}
     </div>
 </template>
@@ -13,7 +13,7 @@ import { computed, ref } from 'vue';
 defineOptions({
     name: 'Aca',
 });
-const props = defineProps<{ name?: string }>();
+const props = defineProps<{ name?: string; absolute?: boolean }>();
 
 console.log(props.name, 11);
 
