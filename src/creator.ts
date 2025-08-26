@@ -110,7 +110,7 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
                 provides: instance.provides || instance.appContext.provides,
             });
             mountComponent[KEY][CONTAINER] = getDom(config.appendTo!).appendChild(document.createElement('div'));
-            render(mountComponent[KEY], mountComponent[KEY][CONTAINER]!);
+            render(mountComponent[KEY], mountComponent[KEY][CONTAINER]);
             mountComponent[KEY][CHILD_REF] = mountComponent[KEY].component!.refs[CHILD_REF]!;
             // 监听父级组件销毁事件
             instance && (instance.vnode.props = mergeProps(instance.vnode.props || {}, { onVnodeBeforeUnmount: unmount }));
@@ -134,8 +134,8 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
             componentName.delete(comp);
             if (!mountComponent[KEY]) return;
             if (mountComponent[KEY][CONTAINER]) {
-                render(null, mountComponent[KEY][CONTAINER]!);
-                mountComponent[KEY][CONTAINER]!.parentElement?.removeChild(mountComponent[KEY][CONTAINER]!);
+                render(null, mountComponent[KEY][CONTAINER]);
+                mountComponent[KEY][CONTAINER].parentElement?.removeChild(mountComponent[KEY][CONTAINER]);
                 mountComponent[KEY][CONTAINER] = null;
             }
             delete mountComponent[KEY];
@@ -153,9 +153,9 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
             if (!mountComponentExtraAttrs[KEY]) return false;
             mountComponentExtraAttrs[KEY].props = merge
                 ? mergeProps(
-                    mountComponent[KEY].props || {},
-                    reactive(props),
-                )
+                        mountComponent[KEY].props || {},
+                        reactive(props),
+                    )
                 : reactive(props);
             return true;
         }

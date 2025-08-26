@@ -38,10 +38,24 @@ export default antfu(
             'switch-colon-spacing': ['error', { after: true }],
             /** switch 冒号后面加空格 */
             'style/switch-colon-spacing': ['error', { after: true }],
+            /** 调整导入顺序 */
+            'perfectionist/sort-imports': ['error', {
+                groups: [
+                    ['builtin-type', 'builtin'],
+                    ['external-type', 'external'],
+                    ['internal-type', 'internal'],
+                    ['parent-type', 'parent'],
+                    ['sibling-type', 'sibling'],
+                    ['index-type', 'index'],
+                    'object',
+                    'side-effect',
+                    'unknown',
+                ],
+                newlinesBetween: 'ignore',
+                internalPattern: ['^~/.*', '^@/.*'],
+            }],
             /** 必须存在分号 */
-            'semi': ['off'],
-            // /** 必须存在分号 */ // 规则在新版本中不存在
-            // 'ts/semi': ['error', 'always'],
+            'semi': ['error', 'always'],
             /** 必须存在分号 */
             'style/semi': ['warn', 'always'],
             // /** 4 个空格 */
@@ -69,26 +83,13 @@ export default antfu(
             'max-statements-per-line': ['error', { max: 1 }],
             /** 不允许混合二进制运算符 */
             'no-mixed-operators': ['error'],
-            // /** 允许空对象声明 */ // 规则在新版本中不存在
-            // 'ts/ban-types': ['error', {
-            //     extendDefaults: true,
-            //     types: { '{}': false },
-            // }],
-            /** 允许空对象声明 */
-            'ts/no-empty-object-type': ['error', {
-                allowInterfaces: 'always',
-                allowObjectTypes: 'always',
-            }],
-            /** 允许在三目中调用存在返回值的函数 */
-            'ts/no-unused-expressions': ['error', {
-                allowTernary: true,
-            }],
             /** 允许包含块内只有一句语句时, 省略包含块 */
             'curly': ['error', 'multi-line'],
             /** 允许语句与 if 同行 */
             'antfu/if-newline': ['off'],
             /** 导入语句后非导入语句时必须接空行 */
             'import/newline-after-import': ['error', { considerComments: false }],
+            'no-unused-vars': ['off'],
             /** 声明变量未使用 */
             'unused-imports/no-unused-vars': 'off',
             /** 导入变量未使用 */
@@ -102,6 +103,8 @@ export default antfu(
             'vue/block-order': ['error', {
                 order: ['template', 'script', 'style'],
             }],
+            /** vue 属性是否必须以 - 连接(全小写以-分隔) */
+            'vue/attribute-hyphenation': ['off'],
             'no-constant-condition': ['error', { checkLoops: false }],
             'no-constant-binary-expression': ['error'],
             /** 防止函数在变量上方时, 函数内部引用变量提示报错 */
@@ -118,6 +121,22 @@ export default antfu(
             'ts/no-unsafe-call': ['off'],
             /** 禁止返回值类型为 any(eg: const a = () => '' as any */
             'ts/no-unsafe-return': ['off'],
+            /** 允许空值和null之类的混用做判断(eg: []?.length) */
+            'ts/strict-boolean-expressions': ['off', {
+                allowAny: true,
+                allowNullableBoolean: true,
+                allowNullableEnum: true,
+                allowNullableNumber: true,
+                allowNullableString: true,
+            }],
+            /** 允许类型中使用空对象(eg: null as unknown as {}) */
+            'ts/no-empty-object-type': ['off'],
+            'ts/no-unused-expressions': ['error', {
+                /** 允许在三目中调用存在返回值的函数(e.g: a ? c() : b()) */
+                allowTernary: true,
+                /** 允许逻辑短路赋值(e.g: a ? b() || (c = d) : e()) */
+                allowShortCircuit: true,
+            }],
         },
     },
     {

@@ -1,10 +1,10 @@
-import { createApp } from 'vue';
 import ElementPlus from 'element-plus';
-import 'element-plus/dist/index.css';
+import { createApp } from 'vue';
 import { install } from '../src/index';
+import App from './App.vue';
+import 'element-plus/dist/index.css';
 import './style.css';
 import 'virtual:uno.css';
-import App from './App.vue';
 
 const app = createApp(App).use(ElementPlus);
 app.use(install, { global: true });

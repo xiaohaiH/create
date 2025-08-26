@@ -23,8 +23,8 @@
 <script lang="ts" setup>
 import { getCurrentInstance, ref } from 'vue';
 import { create, useComponent } from '../src/index';
-import Lump from './components/lump.vue';
 import HDialog from './components/dialog.vue';
+import Lump from './components/lump.vue';
 
 const dialogComponent = useComponent(HDialog);
 const colorLump = useComponent(Lump, { single: false, global: false });

@@ -62,8 +62,8 @@
 import { ElMessage } from 'element-plus';
 import { defineComponent, getCurrentInstance, reactive, ref } from 'vue';
 import { create, useComponent } from '../src/index';
-import Lump from './components/lump.vue';
 import HDialog from './components/dialog.vue';
+import Lump from './components/lump.vue';
 
 export default defineComponent({
     setup() {

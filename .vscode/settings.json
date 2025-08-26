@@ -22,20 +22,29 @@
     "[vue]": {
         "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     },
+    "[html]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    },
+    "[css]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    },
+    "[scss]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    },
+    "[less]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    },
     "[markdown]": {
         "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     },
-    "[html]": {
-        "editor.defaultFormatter": "vscode.html-language-features",
+    "[json]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     },
-    "[css]": {
-        "editor.defaultFormatter": "vscode.css-language-features",
+    "[jsonc]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     },
-    "[scss]": {
-        "editor.defaultFormatter": "vscode.css-language-features",
-    },
-    "[less]": {
-        "editor.defaultFormatter": "vscode.css-language-features",
+    "[jsonl]": {
+        "editor.defaultFormatter": "dbaeumer.vscode-eslint",
     },
     // 禁止 IDE 对以下规则报错, 但在保存的时候自动修复
     "eslint.rules.customizations": [
