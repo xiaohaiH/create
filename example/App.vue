@@ -17,7 +17,7 @@
                     <ElButton class="op-0">
                         弹窗实例存在?
                     </ElButton>
-                    <ElButton class="absolute top-1px z-9999 !mx-0" @click="dialogHasInstance()">
+                    <ElButton class="absolute top-1px z-9999 !mx-0" @click="dialogHasInstance">
                         弹窗实例存在?
                     </ElButton>
                 </div>
@@ -25,7 +25,7 @@
                     <ElButton class="op-0">
                         更新弹窗标题
                     </ElButton>
-                    <ElButton class="absolute top-1px z-9999 !mx-0" @click="dialogUpdateProps({ title: '新的弹窗标题' })">
+                    <ElButton class="absolute top-1px z-9999 !mx-0" @click="dialogUpdateProps">
                         更新弹窗标题
                     </ElButton>
                 </div>
@@ -33,7 +33,7 @@
                     <ElButton class="op-0">
                         更新弹窗插槽
                     </ElButton>
-                    <ElButton class="absolute top-1px z-9999 !mx-0" @click="dialogUpdateSlots({ default: () => '新的插槽内容' })">
+                    <ElButton class="absolute top-1px z-9999 !mx-0" @click="dialogUpdateSlots">
                         更新弹窗插槽
                     </ElButton>
                 </div>
@@ -60,7 +60,7 @@
 
 <script lang="ts">
 import { ElMessage } from 'element-plus';
-import { defineComponent, getCurrentInstance, reactive, ref } from 'vue';
+import { defineComponent, getCurrentInstance, reactive, ref, watch } from 'vue';
 import { create, useComponent } from '../src/index';
 import HDialog from './components/dialog.vue';
 import Lump from './components/lump.vue';
@@ -80,6 +80,7 @@ export default defineComponent({
         // console.log(instance, name);
 
         const props = reactive({ name: 'reactive - 通过调用组件本身方法渲染', absolute: true });
+        // const props = ref({ name: 'reactive - 通过调用组件本身方法渲染', absolute: true });
         instance?.proxy?.$createAca(props).show();
         console.log(instance, props);
 
@@ -87,12 +88,13 @@ export default defineComponent({
         /** 显示弹窗 */
         function dialog() {
             dialogVisible.value = true;
+            slotsCount.value = 0;
             dialogComponent({
                 title: '显示弹窗',
                 onClose() {
                     dialogVisible.value = false;
                 },
-            }).show();
+            }, null).show();
         }
         /** 销毁弹窗 */
         function dialogDestroy() {
@@ -107,11 +109,16 @@ export default defineComponent({
         function dialogHasInstance() {
             ElMessage.success(dialogComponent.hasInstance().toString());
         }
-        function dialogUpdateProps(props: Record<'title', any>) {
-            dialogComponent.updateProps(props);
+        function dialogUpdateProps() {
+            dialogComponent.updateProps({ title: '新的弹窗标题' });
         }
-        function dialogUpdateSlots(children: any) {
-            dialogComponent.updateSlots(children);
+        let slotsCount = ref(0);
+        const slots = ref({ default: () => `新的插槽内容${slotsCount.value}` });
+        function dialogUpdateSlots() {
+            // 初次点击设置插槽
+            if (!slotsCount.value) dialogComponent.updateSlots(slots);
+            // 动态更新插槽内容
+            slotsCount.value++;
         }
         function toggleLump(status?: boolean) {
             status ? colorLump({ name: '1', absolute: true }).show() : colorLump().$unmount();

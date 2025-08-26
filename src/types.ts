@@ -13,7 +13,10 @@ export interface Option {
     single?: boolean;
     /** 是否直接取根实例作为上下文(无法被动销毁组件, 只能手动销毁) */
     global?: boolean;
-    /** 组件重复调用时是否合并上之前的 props */
+    /**
+     * 组件重复调用时是否合并之前传递的 props(不建议设为 true)
+     * 注意: 如果为 true, 会导致传进来的 props 会丢失响应性
+     */
     mergeProps?: boolean;
     /** 元素挂载的节点 @default document.body */
     appendTo?: string | Element | Node | (() => Element | Node);
@@ -32,11 +35,15 @@ export type CustomMethod<T, E = ComponentExposed<T>, K extends keyof E = keyof E
     show: (...args: any[]) => CustomComponent<T>;
     /** 隐藏时触发 */
     hide: (...args: any[]) => CustomComponent<T>;
-    /** 更新 props */
+    /**
+     * 更新 props(注意: 如果 mergeProps 为真, 传进来的 props 会丢失响应性)
+     * @param {Record<string, any> | undefined | null} props 待更新的 props
+     * @param {boolean} mergeProps 是否与之前的 props 进行合并
+     */
     $updateProps: (props: Record<string, any> | undefined | null, mergeProps?: boolean) => CustomComponent<T>;
-    /** 更新 props */
-    $updateSlots: (children?: VNodeChildren | null) => CustomComponent<T>;
-    /** 更新 props */
+    /** 更新 slots */
+    $updateSlots: (children?: MaybeRef<VNodeChildren> | null) => CustomComponent<T>;
+    /** 强制更新组件 */
     $forceUpdate: () => CustomComponent<T>;
     /** 卸载组件 */
     $unmount: () => void;
@@ -80,12 +87,12 @@ export type VNodeChildren = NonNullable<Parameters<typeof h>[2]>;
 
 /** 补充全局挂载函数声明 */
 export interface CreateFn<T> {
-    (props?: (MaybeRefProps<ComponentProps<T>> & { [index: string | number | symbol]: any }) | null, children?: VNodeChildren, config?: Option): CustomComponent<T>;
+    (props?: (MaybeRefProps<ComponentProps<T>> & { [index: string | number | symbol]: any }) | null, children?: MaybeRef<VNodeChildren>, config?: Option): CustomComponent<T>;
 }
 
 /** useComponent 函数的返回函数 */
 export interface UseComponentReturn<T> {
-    (props?: (MaybeRefProps<ComponentProps<T>> & { [index: string | number | symbol]: any }) | null, children?: VNodeChildren): CustomComponent<T>;
+    (props?: (MaybeRefProps<ComponentProps<T>> & { [index: string | number | symbol]: any }) | null, children?: MaybeRef<VNodeChildren> | null): CustomComponent<T>;
     /** 判断是否存在实例(是否初始化) */
     hasInstance: () => boolean;
     /** 获取实例(未初始化时, 自动初始化) */
@@ -93,5 +100,5 @@ export interface UseComponentReturn<T> {
     /** 更新 props 传参 */
     updateProps: (props: (MaybeRefProps<ComponentProps<T>> & { [index: string | number | symbol]: any }) | undefined | null, merge?: boolean) => boolean;
     /** 更新组件插槽 */
-    updateSlots: (children: VNodeChildren | undefined | null) => boolean;
+    updateSlots: (children: MaybeRef<VNodeChildren> | undefined | null) => boolean;
 }

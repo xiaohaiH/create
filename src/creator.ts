@@ -1,5 +1,5 @@
-import type { App, Component, ComponentInternalInstance, ComponentPublicInstance, VNode } from 'vue';
-import { camelize, getCurrentInstance, h, isVNode, mergeProps, nextTick, onBeforeUnmount, reactive, render } from 'vue';
+import type { App, Component, ComponentInternalInstance, ComponentPublicInstance, MaybeRef, VNode } from 'vue';
+import { camelize, getCurrentInstance, h, isVNode, mergeProps, nextTick, onBeforeUnmount, reactive, ref, render, unref } from 'vue';
 import type { ComponentExposed, ComponentProps } from 'vue-component-type-helpers';
 import { CHILD_REF, CONFIG_KEY, CONTAINER, INSTALLED_KEY, NATIVE_PROPS } from './config';
 import type { CreateComponent, CustomApp, CustomComponent, CustomVNode, MaybeRefProps, Option, UseComponentReturn, VNodeChildren } from './types';
@@ -29,10 +29,10 @@ export function install<T extends App>(app: T, options?: Option) {
  * @param {ComponentInternalInstance | Option} [conf] vue 实例或者配置项(配置项未传时取全局配置或默认配置)
  * @param {ComponentInternalInstance} [ins] vue 实例
  */
-export function create<T extends Component>(component: T, conf?: ComponentInternalInstance | Option | null, ins?: ComponentInternalInstance): CreateComponent<T> {
+export function create<T extends Component>(component: T, conf?: ComponentInternalInstance | Option | null, ins?: ComponentInternalInstance | null): CreateComponent<T> {
     const config = isInstance(conf) ? undefined : conf;
     const instance = (isInstance(conf) ? conf : ins) || globalInstance?._instance;
-    (component as CreateComponent<T>).$create = (props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren, _conf?: Option) =>
+    (component as CreateComponent<T>).$create = (props?: MaybeRefProps<ComponentProps<T>> | null, children?: MaybeRef<VNodeChildren>, _conf?: Option) =>
         useComponent(component, _conf || config)(props, children);
     if (instance) {
         if (!component.name) {
@@ -40,8 +40,8 @@ export function create<T extends Component>(component: T, conf?: ComponentIntern
             return component as CreateComponent<T>;
         }
         // 为全局属性暴露补充声明
-        instance.appContext.config.globalProperties[camelize(`$create-${component.name}`)] = function insetCreate(this: ComponentInternalInstance | void, props?: MaybeRefProps<ComponentProps<T>> | null, children?: VNodeChildren, config?: Option) {
-            return useComponent(component, config, this?.uid ? this : instance || globalInstance?._instance)(props, children);
+        instance.appContext.config.globalProperties[camelize(`$create-${component.name}`)] = function insetCreate(this: ComponentInternalInstance | void, props?: MaybeRefProps<ComponentProps<T>> | null, children?: MaybeRef<VNodeChildren>, _conf?: Option) {
+            return useComponent(component, _conf || config, this?.uid ? this : instance || globalInstance?._instance)(props, children);
         };
     }
     return component as CreateComponent<T>;
@@ -74,9 +74,9 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
     componentName.has(comp) || componentName.set(comp, comp.name || `anonymous${++seed}`);
     const KEY = `${instance?.uid || ''}_${componentName.get(comp)}_${(config.single && ++seed) || ''}`;
     const carryCallback: UseComponentReturn<T> = function carryCallback(props, children) {
-        mountComponentExtraAttrs[KEY] || (mountComponentExtraAttrs[KEY] = {});
+        mountComponentExtraAttrs[KEY] || (mountComponentExtraAttrs[KEY] = reactive({ props: { ref: CHILD_REF } }));
         updateProps(props, config.mergeProps);
-        updateSlots(children);
+        children !== undefined && updateSlots(children);
         mount();
 
         /** 显示组件 */
@@ -103,7 +103,7 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
         /** 挂载组件 */
         function mount() {
             if (mountComponent[KEY]) return;
-            mountComponent[KEY] = h({ render: () => h(comp, { ...mountComponentExtraAttrs[KEY].props, ref: CHILD_REF }, mountComponentExtraAttrs[KEY].slots) }) as CustomVNode<T>;
+            mountComponent[KEY] = h({ render: () => h(comp, mountComponentExtraAttrs[KEY].props, mountComponentExtraAttrs[KEY].slots) }) as CustomVNode<T>;
             instance?.appContext && (mountComponent[KEY].appContext = {
                 ...instance.appContext,
                 // @ts-expect-error 实例没有对 provides 进行声明
@@ -153,20 +153,25 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
             if (!mountComponentExtraAttrs[KEY]) return false;
             mountComponentExtraAttrs[KEY].props = merge
                 ? mergeProps(
-                        mountComponent[KEY].props || {},
-                        reactive(props),
+                        mountComponent[KEY]?.props || {},
+                        unref(props),
                     )
-                : reactive(props);
+                : props;
+            // 防止传递的 props 中存在 ref 或不合并时导致引用丢失
+            mountComponentExtraAttrs[KEY].props.ref = CHILD_REF;
             return true;
         }
         /** 更新插槽 */
-        function updateSlots(children?: VNodeChildren | null): CustomComponent<T> {
+        function updateSlots(children?: MaybeRef<VNodeChildren> | null): CustomComponent<T> {
             if (!mountComponentExtraAttrs[KEY]) return mountComponent[KEY]?.[CHILD_REF] as CustomComponent<T>;
             if (mountComponentExtraAttrs[KEY].slots === children) return mountComponent[KEY]?.[CHILD_REF] as CustomComponent<T>;
-            mountComponentExtraAttrs[KEY].slots = children;
+            // vue slots 不支持动态改变插槽
+            // 且由于主动改变 mountComponentExtraAttrs[KEY].slots 的值
+            // 会影响到外部, 因此 unref(children)
+            mountComponentExtraAttrs[KEY].slots = unref(children);
             return update();
         }
-        /** 更新组件 tips 刷新是等到下个周期才会更新 props, 所以 show 需要在 nextTick 内执行 */
+        /** 更新组件(tips 刷新是等到下个周期才会更新 props, 所以 show 需要在 nextTick 内执行) */
         function update() {
             mountComponent[KEY]?.component?.proxy?.$forceUpdate();
             return mountComponent[KEY]?.[CHILD_REF] as CustomComponent<T>;
