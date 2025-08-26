@@ -40,8 +40,8 @@ export default antfu(
             'style/switch-colon-spacing': ['error', { after: true }],
             /** 必须存在分号 */
             'semi': ['off'],
-            /** 必须存在分号 */
-            'ts/semi': ['error', 'always'],
+            // /** 必须存在分号 */ // 规则在新版本中不存在
+            // 'ts/semi': ['error', 'always'],
             /** 必须存在分号 */
             'style/semi': ['warn', 'always'],
             // /** 4 个空格 */
@@ -69,10 +69,19 @@ export default antfu(
             'max-statements-per-line': ['error', { max: 1 }],
             /** 不允许混合二进制运算符 */
             'no-mixed-operators': ['error'],
+            // /** 允许空对象声明 */ // 规则在新版本中不存在
+            // 'ts/ban-types': ['error', {
+            //     extendDefaults: true,
+            //     types: { '{}': false },
+            // }],
             /** 允许空对象声明 */
-            'ts/ban-types': ['error', {
-                extendDefaults: true,
-                types: { '{}': false },
+            'ts/no-empty-object-type': ['error', {
+                allowInterfaces: 'always',
+                allowObjectTypes: 'always',
+            }],
+            /** 允许在三目中调用存在返回值的函数 */
+            'ts/no-unused-expressions': ['error', {
+                allowTernary: true,
             }],
             /** 允许包含块内只有一句语句时, 省略包含块 */
             'curly': ['error', 'multi-line'],
@@ -119,6 +128,6 @@ export default antfu(
         },
     },
     {
-        ignores: ['.eslintrc-auto-import.json', '**/.eslintrc-auto-import.json/**', '.github/**'],
+        ignores: ['.eslintrc-auto-import.json', '**/.eslintrc-auto-import.json/**', '.github/**', 'pnpm-workspace.yaml', 'pnpm-lock.yaml'],
     },
 );

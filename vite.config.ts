@@ -19,4 +19,7 @@ export default defineConfig(({ mode }) => ({
     build: {
         outDir: 'dist2',
     },
+    server: {
+        port: 2233,
+    },
 }) satisfies UserConfig);

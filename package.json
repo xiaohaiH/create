@@ -9,14 +9,13 @@
         "useComponent"
     ],
     "exports": {
+        "./*": "./src/*",
+        "./global": "./types/index.d.ts",
         ".": {
             "types": "./src/index.ts",
             "import": "./src/index.ts",
-            "require": "./dist/index.cjs",
-            "browser": "./src/index.umd.cjs"
-        },
-        "./*": "./src/*",
-        "./global": "./types/index.d.ts"
+            "require": "./dist/index.cjs"
+        }
     },
     "main": "./src/index.umd.cjs",
     "module": "./src/index.ts",
@@ -30,7 +29,10 @@
         "lib": "vue-tsc && vite build --config vite.lib.config.ts",
         "preview": "vite preview",
         "lint": "eslint .",
-        "lint:fix": "eslint . --fix"
+        "lint:fix": "eslint . --fix",
+        "docs:dev": "vitepress dev docs --host --port 2230",
+        "docs:build": "vitepress build docs",
+        "docs:preview": "vitepress preview docs --port 2231"
     },
     "dependencies": {
         "element-plus": "^2.7.3",
@@ -53,6 +55,7 @@
         "unocss": "^0.60.4",
         "vite": "^5.1.4",
         "vite-tsconfig-paths": "^4.3.1",
+        "vitepress": "2.0.0-alpha.12",
         "vue-component-type-helpers": "^2.0.6",
         "vue-tsc": "^1.8.27"
     },
