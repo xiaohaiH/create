@@ -68,7 +68,7 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
     let instance = outsideInstance || getCurrentInstance() || globalInstance?._instance;
     const config = { ...DEFAULT_OPTION } as Option;
     conf && !isInstance(conf) && Object.assign(config, conf);
-    instance?.proxy?.[CONFIG_KEY] && Object.assign(config, instance.proxy[CONFIG_KEY]);
+    inObj(instance?.proxy, CONFIG_KEY) && Object.assign(config, instance!.proxy![CONFIG_KEY]);
 
     if (config.global && instance) instance = instance.root;
     componentName.has(comp) || componentName.set(comp, comp.name || `anonymous${++seed}`);
@@ -201,6 +201,11 @@ export function useComponent<T extends Component>(comp: T, conf?: Option | Compo
 /** 判断是否是实例 */
 function isInstance(val: any): val is ComponentInternalInstance {
     return val && typeof val === 'object' && 'uid' in val;
+}
+
+/** 判断是否是实例 */
+function inObj(obj: any, field: string | number | symbol): boolean {
+    return !!obj && field in obj;
 }
 
 /** 获取 dom 节点 */
