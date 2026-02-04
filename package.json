@@ -1,7 +1,7 @@
 {
     "name": "@xiaohaih/create-api",
     "type": "module",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "description": "通过js挂载vue组件",
     "keywords": [
         "vue-create-api",
@@ -40,24 +40,24 @@
         "vue-router": "^4.3.0"
     },
     "devDependencies": {
-        "@antfu/eslint-config": "^2.8.0",
+        "@antfu/eslint-config": "^4.3.0",
         "@types/node": "^20.14.10",
-        "@unocss/eslint-plugin": "^0.61.0",
+        "@unocss/eslint-plugin": "^66.4.2",
         "@vitejs/plugin-vue": "^5.0.4",
         "@vitejs/plugin-vue-jsx": "^3.1.0",
-        "eslint": "^8.57.0",
-        "eslint-plugin-format": "^0.1.1",
+        "eslint": "^9.14.0",
+        "eslint-plugin-format": "^1.0.1",
         "esno": "^4.7.0",
         "lint-staged": "^15.2.2",
         "sass": "^1.71.1",
         "simple-git-hooks": "^2.10.0",
-        "typescript": "^5.4.5",
+        "typescript": "^5.6.3",
         "unocss": "^0.60.4",
         "vite": "^5.1.4",
         "vite-tsconfig-paths": "^4.3.1",
         "vitepress": "2.0.0-alpha.12",
         "vue-component-type-helpers": "^2.0.6",
-        "vue-tsc": "^1.8.27"
+        "vue-tsc": "^3.2.4"
     },
     "simple-git-hooks": {
         "pre-commit": "pnpm lint-staged"
